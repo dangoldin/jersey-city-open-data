@@ -82,13 +82,36 @@
                     bounds.extend(results[0].geometry.location);
                     // console.log(vertices);
                 } else {
-                    console.log("Error looking up address: " + addr);
+                    console.log("Error looking up address: " + addr + " status: " + status);
                     // alert("Geocode was not successful for the following reason: " + status);
                 }
             });
         }
 
+        function getGeoCenter(points) {
+            var sumLat = 0,
+                sumLng = 0;
+
+            for (var i = 0; i < points.length; i++) {
+                sumLat += points[i].lat;
+                sumLng += points[i].lng;
+            }
+
+            return {lat: sumLat/points.length, lng: sumLng/points.length};
+        }
+
+        function calculateAnglesFromCenter(points) {
+            var center = getGeoCenter(points);
+
+            for (var i = 0; i < points.length; i++) {
+                points[i].angle = Math.atan2(points[i].lat - center.lat, points[i].lng - center.lng);
+            }
+
+            return points;
+        }
+
         function initMap() {
+            var SLEEP_STEP = 1000;
             geocoder = new google.maps.Geocoder;
             vertices = [];
             bounds = new google.maps.LatLngBounds();
@@ -98,35 +121,40 @@
             mapTypeId: google.maps.MapTypeId.TERRAIN
           });
 
-          for (var i = 0; i < zone1.length; i++) {
-            var addrs = getAddresses(zone1[i]);
-            console.log(addrs);
+          zone1.forEach(function(addrRow, idx) {
+            setTimeout(function() {
+                var addrs = getAddresses(addrRow);
+                if (addrs.length > 1) {
+                    geoCode(geocoder, addrs[0] + ' Jersey City, NJ', vertices, bounds);
+                    geoCode(geocoder, addrs[1] + ' Jersey City, NJ', vertices, bounds);
+                }
+            }, SLEEP_STEP * idx);
+          });
 
-            if (addrs.length > 1) {
-                console.log(addrs[0]);
-                geoCode(geocoder, addrs[0] + ' Jersey City, NJ', vertices, bounds);
-                geoCode(geocoder, addrs[1] + ' Jersey City, NJ', vertices, bounds);
-            }
-          }
+            setTimeout(function(){
+                vertices = calculateAnglesFromCenter(vertices);
+                console.log(vertices);
 
-          setTimeout(function(){
-            console.log(vertices);
-              var poly = new google.maps.Polyline({
-                path: vertices,
-                geodesic: true,
-                strokeColor: '#FF0000',
-                strokeOpacity: 0.8,
-                strokeWeight: 3,
-                fillColor: '#FF0000',
-                fillOpacity: 0.35
-              });
-              poly.setMap(map);
+                vertices.sort(function(a, b) {
+                    return a.angle - b.angle;
+                });
 
-              map.setCenter(bounds.getCenter());
+                var poly = new google.maps.Polygon({
+                    paths: vertices,
+                    geodesic: true,
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 3,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.35
+                });
+                poly.setMap(map);
 
-              // Add a listener for the click event.
-              poly.addListener('click', showArrays);
-            }, 5000);
+                map.setCenter(bounds.getCenter());
+
+                // Add a listener for the click event.
+                poly.addListener('click', showArrays);
+            }, SLEEP_STEP * zone1.length);
 
           infoWindow = new google.maps.InfoWindow;
         }
