@@ -16,11 +16,11 @@
         <div id="map"></div>
 
         <script>
-        var map;
-        var infoWindow;
-        var geocoder;
-        var vertices;
-        var bounds;
+        var map,
+            infoWindow,
+            geocoder,
+            vertices,
+            bounds;
 
         function getAddresses(addrStr) {
             var addrs = addrStr.split('--');
@@ -36,27 +36,6 @@
                 addrs[0] + ' ' + street,
                 streetPieces[0] + ' ' + street
             ];
-        }
-
-        function geoCode(geocoder, addr, vertices, bounds) {
-            geocoder.geocode( { 'address': addr}, function(results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    // map.setCenter(results[0].geometry.location);
-                    // var marker = new google.maps.Marker({
-                    //     map: map,
-                    //     position: results[0].geometry.location
-                    // });
-                    var lat = results[0].geometry.location.lat();
-                    var lng = results[0].geometry.location.lng();
-                    console.log(lat + ' ' + lng);
-                    vertices.push({'lat': lat, 'lng': lng});
-                    bounds.extend(results[0].geometry.location);
-                    // console.log(vertices);
-                } else {
-                    console.log("Error looking up address: " + addr + " status: " + status);
-                    // alert("Geocode was not successful for the following reason: " + status);
-                }
-            });
         }
 
         function getGeoCenter(points) {

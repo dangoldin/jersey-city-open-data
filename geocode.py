@@ -15,6 +15,13 @@ def geocode(addr):
     lat, lng = geopy.geocode(addr)
     return (lat, lng)
 
+# Figure out the algo here
+def convex_poly(lat_lngs):
+    poly = []
+    for lat, lng in lat_lngs:
+        pass
+    return poly
+
 with open('zone-permit-zones.json','r') as f:
     j = json.loads(f.read())
 
@@ -30,7 +37,7 @@ with open('zone-permit-zones.json','r') as f:
 
         lat_lngs = [geocode(a) for a in addrs]
 
-        out[zone] = lat_lngs
+        out[zone] = convex_poly(lat_lngs)
 
     with open('zone-permit-geocoded.json', 'w') as g:
         g.write(json.dumps(out, indent=2))
