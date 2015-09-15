@@ -1,10 +1,17 @@
+#!/usr/bin/python
+
 import json
-from geopy.geocoders import Nominatim
+import time
+
+from geopy.geocoders import Nominatim, GoogleV3
 from pyhull.convex_hull import ConvexHull
 
 TIMEOUT_SECONDS = 1
 
-geolocator = Nominatim(timeout=TIMEOUT_SECONDS)
+MAX_ATTEMPTS = 5
+
+# geolocator = Nominatim(timeout=TIMEOUT_SECONDS)
+geolocator = GoogleV3(timeout=TIMEOUT_SECONDS,api_key=)
 
 def get_addrs(addr_range):
     parts = addr_range.split('--')
@@ -12,14 +19,23 @@ def get_addrs(addr_range):
     if len(parts) == 2:
         street_parts = parts[1].split(' ')
         return [
-            parts[0] + ' ' + ' '.join(street_parts[1:]),
-            parts[1]
+            parts[0] + ' ' + ' '.join(street_parts[1:]) + ' Jersey City, NJ',
+            parts[1] + ' Jersey City, NJ',
         ]
     return []
 
-def geocode(addr):
-    loc = geolocator.geocode(addr)
-    return (loc.latitude, loc.longitude)
+def geocode(addr, attempts_left = MAX_ATTEMPTS):
+    print 'Geocoding: ', addr
+    while attempts_left > 0:
+        try:
+            loc = geolocator.geocode(addr)
+            return (loc.latitude, loc.longitude)
+        except Exception, e:
+            print 'Failed to geocode: ', addr, e
+            attempts_left -= 1
+            time.sleep(TIMEOUT_SECONDS * 2 * (MAX_ATTEMPTS - attempts_left + 1))
+
+    return None
 
 def convex_hull(lat_lngs):
     hull = ConvexHull(lat_lngs)
