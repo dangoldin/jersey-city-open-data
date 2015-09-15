@@ -40,6 +40,10 @@ def geocode(addr, attempts_left = MAX_ATTEMPTS):
     return None
 
 def convex_hull(lat_lngs):
+    if len(lat_lngs) == 0:
+        print 'Empty lat lng list'
+        return []
+
     hull = ConvexHull(lat_lngs)
     vertices = dict((x, y) for x, y in hull.vertices)
     poly = []
