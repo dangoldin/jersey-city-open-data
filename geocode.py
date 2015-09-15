@@ -54,22 +54,22 @@ with open('zone-permit-zones.json','r') as f:
 
     out = {}
     for zone, zone_addrs in j.iteritems():
-        if zone == 'ZONE 1':
-            addrs = []
-            for addr_range in zone_addrs:
-                addr_pair = get_addrs(addr_range)
-                if len(addr_pair) > 0:
-                    addrs.extend(addr_pair)
+        print 'Handling zone: ', zone
+        addrs = []
+        for addr_range in zone_addrs:
+            addr_pair = get_addrs(addr_range)
+            if len(addr_pair) > 0:
+                addrs.extend(addr_pair)
 
-            print addrs
+        print addrs
 
-            lat_lngs = [geocode(a) for a in addrs]
+        lat_lngs = [geocode(a) for a in addrs]
 
-            print lat_lngs
+        print lat_lngs
 
-            out[zone] = convex_hull(lat_lngs)
+        out[zone] = convex_hull(lat_lngs)
 
-            print out
+        print out
 
     with open('zone-permit-geocoded.json', 'w') as g:
         g.write(json.dumps(out, indent=2))
