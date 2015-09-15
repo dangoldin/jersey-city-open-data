@@ -40,7 +40,8 @@ def geocode(addr, attempts_left = MAX_ATTEMPTS):
     return None
 
 def convex_hull(lat_lngs):
-    if len(lat_lngs) == 0:
+    # Can't do hull for fewer than 3 points
+    if len(lat_lngs) <= 3:
         print 'Empty lat lng list'
         return []
 
