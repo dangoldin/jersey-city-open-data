@@ -6,12 +6,14 @@ import time
 from geopy.geocoders import Nominatim, GoogleV3
 from pyhull.convex_hull import ConvexHull
 
+import settings
+
 TIMEOUT_SECONDS = 1
 
 MAX_ATTEMPTS = 5
 
 # geolocator = Nominatim(timeout=TIMEOUT_SECONDS)
-geolocator = GoogleV3(timeout=TIMEOUT_SECONDS,api_key=)
+geolocator = GoogleV3(timeout=TIMEOUT_SECONDS,api_key=settings.GOOGLE_MAPS_API_KEY)
 
 def get_addrs(addr_range):
     parts = addr_range.split('--')

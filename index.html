@@ -16,95 +16,85 @@
         <div id="map"></div>
 
         <script>
+        var coordinates = {
+          "ZONE 1": [
+            [
+              40.716883,
+              -74.0505032
+            ],
+            [
+              40.7187623,
+              -74.0603448
+            ],
+            [
+              40.7243361,
+              -74.05312239999999
+            ],
+            [
+              40.7243939,
+              -74.05098
+            ],
+            [
+              40.7235597,
+              -74.04762749999999
+            ],
+            [
+              40.7200457,
+              -74.04122
+            ],
+            [
+              40.7169056,
+              -74.0390974
+            ],
+            [
+              40.7161675,
+              -74.039107
+            ],
+            [
+              40.7162993,
+              -74.0448411
+            ]
+          ]
+        };
+
         var map,
             infoWindow,
             geocoder,
             vertices,
             bounds;
 
-        function getAddresses(addrStr) {
-            var addrs = addrStr.split('--');
-            if (addrs.length == 1) {
-                // No number range
-                return addrs;
-            }
-
-            var streetPieces = addrs[1].split(' ');
-            var street = streetPieces[1];
-
-            return [
-                addrs[0] + ' ' + street,
-                streetPieces[0] + ' ' + street
-            ];
-        }
-
-        function getGeoCenter(points) {
-            var sumLat = 0,
-                sumLng = 0;
-
-            for (var i = 0; i < points.length; i++) {
-                sumLat += points[i].lat;
-                sumLng += points[i].lng;
-            }
-
-            return {lat: sumLat/points.length, lng: sumLng/points.length};
-        }
-
-        function calculateAnglesFromCenter(points) {
-            var center = getGeoCenter(points);
-
-            for (var i = 0; i < points.length; i++) {
-                points[i].angle = Math.atan2(points[i].lat - center.lat, points[i].lng - center.lng);
-            }
-
-            return points;
-        }
-
         function initMap() {
             var SLEEP_STEP = 1000;
-            geocoder = new google.maps.Geocoder;
-            vertices = [];
+            vertices = []
             bounds = new google.maps.LatLngBounds();
 
-          map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 12,
-            mapTypeId: google.maps.MapTypeId.TERRAIN
-          });
+            for (var i = 0; i < coordinates['ZONE 1'].length; i++) {
+                var c = coordinates['ZONE 1'][i];
+                var p = new google.maps.LatLng(c[0], c[1]);
+                vertices.push(p);
+                bounds = bounds.extend(p)
+            }
 
-          zone1.forEach(function(addrRow, idx) {
-            setTimeout(function() {
-                var addrs = getAddresses(addrRow);
-                if (addrs.length > 1) {
-                    geoCode(geocoder, addrs[0] + ' Jersey City, NJ', vertices, bounds);
-                    geoCode(geocoder, addrs[1] + ' Jersey City, NJ', vertices, bounds);
-                }
-            }, SLEEP_STEP * idx);
-          });
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 12,
+                mapTypeId: google.maps.MapTypeId.TERRAIN
+            });
 
-            setTimeout(function(){
-                vertices = calculateAnglesFromCenter(vertices);
-                console.log(vertices);
+            var poly = new google.maps.Polygon({
+                paths: vertices,
+                geodesic: true,
+                strokeColor: '#FF0000',
+                strokeOpacity: 0.8,
+                strokeWeight: 3,
+                fillColor: '#FF0000',
+                fillOpacity: 0.35
+            });
+            poly.setMap(map);
 
-                vertices.sort(function(a, b) {
-                    return a.angle - b.angle;
-                });
+            map.setCenter(bounds.getCenter());
 
-                var poly = new google.maps.Polygon({
-                    paths: vertices,
-                    geodesic: true,
-                    strokeColor: '#FF0000',
-                    strokeOpacity: 0.8,
-                    strokeWeight: 3,
-                    fillColor: '#FF0000',
-                    fillOpacity: 0.35
-                });
-                poly.setMap(map);
-
-                map.setCenter(bounds.getCenter());
-
-                // Add a listener for the click event.
-                poly.addListener('click', showArrays);
-            }, SLEEP_STEP * zone1.length);
+            // Add a listener for the click event.
+            poly.addListener('click', showArrays);
 
           infoWindow = new google.maps.InfoWindow;
         }
