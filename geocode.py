@@ -2,7 +2,9 @@ import json
 from geopy.geocoders import Nominatim
 from pyhull.convex_hull import ConvexHull
 
-geolocator = Nominatim()
+TIMEOUT_SECONDS = 1
+
+geolocator = Nominatim(timeout=TIMEOUT_SECONDS)
 
 def get_addrs(addr_range):
     parts = addr_range.split('--')
@@ -21,7 +23,13 @@ def geocode(addr):
 
 def convex_hull(lat_lngs):
     hull = ConvexHull(lat_lngs)
-    return hull.vertices
+    vertices = dict((x, y) for x, y in hull.vertices)
+    poly = []
+    curr = hull.vertices[0][0]
+    while len(poly) < len(hull.vertices):
+        poly.append( lat_lngs[curr] )
+        curr = vertices[curr]
+    return poly
 
 with open('zone-permit-zones.json','r') as f:
     j = json.loads(f.read())
@@ -43,7 +51,7 @@ with open('zone-permit-zones.json','r') as f:
 
             out[zone] = convex_hull(lat_lngs)
 
-        print out
+            print out
 
     with open('zone-permit-geocoded.json', 'w') as g:
         g.write(json.dumps(out, indent=2))
