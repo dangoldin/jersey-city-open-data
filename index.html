@@ -17,6 +17,158 @@
 
         <script>
         var coordinates = {
+          "ZONE 4": [
+            [
+              40.7200234,
+              -74.04126339999999
+            ],
+            [
+              40.72430629999999,
+              -74.04058069999999
+            ],
+            [
+              40.72116630000001,
+              -74.0352355
+            ],
+            [
+              40.7164967,
+              -74.0345172
+            ],
+            [
+              40.7156327,
+              -74.0345111
+            ],
+            [
+              40.7151398,
+              -74.0360879
+            ],
+            [
+              40.7161728,
+              -74.0389027
+            ],
+            [
+              40.7163761,
+              -74.0392349
+            ]
+          ],
+          "ZONE 5": [
+            [
+              40.7252128,
+              -74.0506639
+            ],
+            [
+              40.72564,
+              -74.045678
+            ],
+            [
+              40.725479,
+              -74.043921
+            ],
+            [
+              40.7244815,
+              -74.0423007
+            ],
+            [
+              40.7237112,
+              -74.0417848
+            ],
+            [
+              40.7214373,
+              -74.0405305
+            ],
+            [
+              40.720112,
+              -74.0412662
+            ],
+            [
+              40.7201061,
+              -74.04154419999999
+            ],
+            [
+              40.720114,
+              -74.04289980000001
+            ],
+            [
+              40.7208005,
+              -74.04448049999999
+            ],
+            [
+              40.7220456,
+              -74.047144
+            ],
+            [
+              40.7244868,
+              -74.05053029999999
+            ]
+          ],
+          "ZONE 6": [
+            [
+              40.7252129,
+              -74.0425374
+            ],
+            [
+              40.72379859999999,
+              -74.04933489999999
+            ],
+            [
+              40.7259636,
+              -74.0506817
+            ],
+            [
+              40.726374,
+              -74.050765
+            ],
+            [
+              40.7288646,
+              -74.05003839999999
+            ],
+            [
+              40.7308988,
+              -74.04671619999999
+            ],
+            [
+              40.7311584,
+              -74.0445201
+            ],
+            [
+              40.7307071,
+              -74.0429505
+            ],
+            [
+              40.728686,
+              -74.041335
+            ],
+            [
+              40.72652,
+              -74.0404252
+            ]
+          ],
+          "ZONE 7": [
+            [
+              40.6610667,
+              -74.1289761
+            ],
+            [
+              40.6626201,
+              -74.12960029999999
+            ],
+            [
+              40.7335705,
+              -74.0467493
+            ],
+            [
+              40.7362535,
+              -74.0430286
+            ],
+            [
+              40.7368161,
+              -74.03853339999999
+            ],
+            [
+              40.7251038,
+              -74.04042299999999
+            ]
+          ],
           "ZONE 1": [
             [
               40.716883,
@@ -54,42 +206,122 @@
               40.7162993,
               -74.0448411
             ]
-          ]
+          ],
+          "ZONE 2": [
+            [
+              40.627972,
+              -74.023258
+            ],
+            [
+              40.4695667,
+              -74.2759736
+            ],
+            [
+              40.6521221,
+              -74.19160509999999
+            ],
+            [
+              40.7835072,
+              -74.0472546
+            ],
+            [
+              40.770467,
+              -74.0245419
+            ]
+          ],
+          "ZONE 3": [
+            [
+              40.7204391,
+              -74.0032492
+            ],
+            [
+              40.7114919,
+              -74.04070709999999
+            ],
+            [
+              40.715803,
+              -74.048631
+            ]
+          ],
+          "ZONE 8": [
+            [
+              40.71458190000001,
+              -74.08918539999999
+            ],
+            [
+              40.7109225,
+              -74.08362799999999
+            ],
+            [
+              40.7072958,
+              -74.086145
+            ],
+            [
+              40.706062,
+              -74.089597
+            ],
+            [
+              40.707816,
+              -74.09138000000002
+            ],
+            [
+              40.7114425,
+              -74.0923339
+            ]
+          ],
+          "ZONE 9": [],
+          "ZONE 12": [],
+          "ZONE 10": [],
+          "ZONE 11": []
         };
 
         var map,
-            infoWindow,
-            geocoder,
-            vertices,
-            bounds;
+            infoWindow;
+
+        function toLatLng(arr) {
+            var points = [];
+            for (var i = 0; i < arr.length; i++) {
+                var c = arr[i];
+                var p = new google.maps.LatLng(c[0], c[1]);
+                points.push(p);
+            }
+            return points;
+        }
+
+        function extend(bounds, points) {
+            points.forEach(function(p) {
+                bounds.extend(p);
+            });
+        }
 
         function initMap() {
             var SLEEP_STEP = 1000;
-            vertices = []
-            bounds = new google.maps.LatLngBounds();
-
-            for (var i = 0; i < coordinates['ZONE 1'].length; i++) {
-                var c = coordinates['ZONE 1'][i];
-                var p = new google.maps.LatLng(c[0], c[1]);
-                vertices.push(p);
-                bounds = bounds.extend(p)
-            }
+            var bounds = new google.maps.LatLngBounds();
 
             map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 12,
                 mapTypeId: google.maps.MapTypeId.TERRAIN
             });
 
-            var poly = new google.maps.Polygon({
-                paths: vertices,
-                geodesic: true,
-                strokeColor: '#FF0000',
-                strokeOpacity: 0.8,
-                strokeWeight: 3,
-                fillColor: '#FF0000',
-                fillOpacity: 0.35
-            });
-            poly.setMap(map);
+            for (var property in coordinates) {
+                if (coordinates.hasOwnProperty(property)) {
+                    var vertices = toLatLng(coordinates[property]);
+
+                    if (vertices.length > 0) {
+                        extend(bounds, vertices);
+                        var poly = new google.maps.Polygon({
+                            paths: vertices,
+                            geodesic: true,
+                            strokeColor: '#FF0000',
+                            strokeOpacity: 0.8,
+                            strokeWeight: 3,
+                            fillColor: '#FF0000',
+                            fillOpacity: 0.35
+                        });
+                        poly.setMap(map);
+                    }
+                }
+            }
 
             map.setCenter(bounds.getCenter());
 
@@ -120,7 +352,7 @@
           infoWindow.setPosition(event.latLng);
 
           infoWindow.open(map);
-        }
+        };
     </script>
     <script async defer
         src="https://maps.googleapis.com/maps/api/js?signed_in=true&key=&callback=initMap"></script>
