@@ -306,55 +306,54 @@
             for (var property in coordinates) {
                 if (coordinates.hasOwnProperty(property)) {
                     var vertices = toLatLng(coordinates[property]);
+                    var color = '#'+Math.floor(Math.random()*16777215).toString(16);
 
                     if (vertices.length > 0) {
                         extend(bounds, vertices);
                         var poly = new google.maps.Polygon({
                             paths: vertices,
                             geodesic: true,
-                            strokeColor: '#FF0000',
+                            // strokeColor: '#FF0000',
+                            strokeColor: color,
                             strokeOpacity: 0.8,
                             strokeWeight: 3,
-                            fillColor: '#FF0000',
+                            // fillColor: '#FF0000',
+                            fillColor: color,
                             fillOpacity: 0.35
                         });
                         poly.setMap(map);
+                        poly.addListener('click', showArrays);
                     }
                 }
             }
 
             map.setCenter(bounds.getCenter());
 
-            // Add a listener for the click event.
-            poly.addListener('click', showArrays);
-
           infoWindow = new google.maps.InfoWindow;
         }
 
         function showArrays(event) {
-          // Since this polygon has only one path, we can call getPath() to return the
-          // MVCArray of LatLngs.
-          var vertices = this.getPath();
+            console.log(event);
 
-          var contentString = '<b>Bermuda Triangle polygon</b><br>' +
-              'Clicked location: <br>' + event.latLng.lat() + ',' + event.latLng.lng() +
-              '<br>';
+            var vertices = this.getPath();
 
-          // Iterate over the vertices.
-          for (var i =0; i < vertices.getLength(); i++) {
-            var xy = vertices.getAt(i);
-            contentString += '<br>' + 'Coordinate ' + i + ':<br>' + xy.lat() + ',' +
-                xy.lng();
-          }
+            var contentString = '<b>Map</b><br>' +
+                'Clicked location: <br>' + event.latLng.lat() + ',' + event.latLng.lng() +
+                '<br>';
 
-          // Replace the info window's content and position.
-          infoWindow.setContent(contentString);
-          infoWindow.setPosition(event.latLng);
+                for (var i =0; i < vertices.getLength(); i++) {
+                    var xy = vertices.getAt(i);
+                    contentString += '<br>' + 'Coordinate ' + i + ':<br>' + xy.lat() + ',' +
+                        xy.lng();
+                }
 
-          infoWindow.open(map);
+            // Replace the info window's content and position.
+            infoWindow.setContent(contentString);
+            infoWindow.setPosition(event.latLng);
+            infoWindow.open(map);
         };
     </script>
-    <script async defer
-        src="https://maps.googleapis.com/maps/api/js?signed_in=true&key=&callback=initMap"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?callback=initMap">
+        </script>
   </body>
 </html>
