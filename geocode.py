@@ -3,7 +3,7 @@
 import json
 import time
 
-from geopy.geocoders import Nominatim, GoogleV3
+from geopy.geocoders import GoogleV3
 from pyhull.convex_hull import ConvexHull
 
 import settings
@@ -12,7 +12,6 @@ TIMEOUT_SECONDS = 1
 
 MAX_ATTEMPTS = 5
 
-# geolocator = Nominatim(timeout=TIMEOUT_SECONDS)
 geolocator = GoogleV3(timeout=TIMEOUT_SECONDS,api_key=settings.GOOGLE_MAPS_API_KEY)
 
 def get_addrs(addr_range):
@@ -57,7 +56,7 @@ def convex_hull(lat_lngs):
 with open('zone-permit-zones.json','r') as f:
     j = json.loads(f.read())
 
-    out = {}
+    out = []
     for zone, zone_addrs in j.iteritems():
         print 'Handling zone: ', zone
         addrs = []
@@ -68,12 +67,14 @@ with open('zone-permit-zones.json','r') as f:
 
         print addrs
 
-        lat_lngs = [geocode(a) for a in addrs]
+        lat_lngs = [(a, geocode(a)) for a in addrs]
 
         print lat_lngs
 
-        out[zone] = convex_hull(lat_lngs)
-
+        out.append({'geocoded' : lat_lngs,
+                    'hull' : convex_hull([x[1] for x in lat_lngs]),
+                    'zone' : zone,
+                    })
         print out
 
     with open('zone-permit-geocoded.json', 'w') as g:
