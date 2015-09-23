@@ -126,12 +126,9 @@
         "1--58 RAVINE AVE",
         "ALL OF ROCK ST",
         "ALL OF ROMAINE AVE",
-        "1--77 ST",
-        "PAUL'S AVE",
-        "116--178 ST",
-        "PAUL'S AV",
-        "254--304 ST",
-        "PAUL'S AV",
+        "1--77 ST PAUL'S AVE",
+        "116--178 ST PAUL'S AV",
+        "254--304 ST PAUL'S AV",
         "1--317 SHERMAN AVE",
         "44--490 SIP AVE",
         "ALL OF SKILLMAN AVE",
@@ -226,14 +223,14 @@
     ],
     "ZONE 7": [
         "218--300 ERIE ST",
-        "151--209 FIFTHTEEN ST",
+        "151--209 15TH ST",
         "591-700 GROVE ST",
         "749--890 JERSEY AVE",
         "446--700 MARIN BLVD",
         "ALL OF NEWPORT PKWY",
         "ALL OF RIVER DR SO",
-        "157--357 SIXTEEN ST",
-        "161--189 TENTH ST"
+        "157--357 16TH ST",
+        "161--189 10TH ST"
     ],
     "ZONE 8": [
         "1--186 AUDUBON AVE",
