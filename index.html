@@ -17,6 +17,7 @@
 
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script src="https://maps.googleapis.com/maps/api/js"></script>
+        <script src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/maplabel/src/maplabel-compiled.js"></script>
         <script>
         var infoWindow, map;
 
@@ -36,6 +37,12 @@
             });
         }
 
+        function getCenter(points) {
+            var bounds = new google.maps.LatLngBounds();
+            extend(bounds, points);
+            return bounds.getCenter();
+        }
+
         function initMap(zone_data) {
             map = new google.maps.Map(document.getElementById('map'), {
                 zoom: 12,
@@ -46,7 +53,8 @@
 
             zone_data.forEach(function(zone_info) {
                 var color = '#'+Math.floor(Math.random() * 16777215).toString(16),
-                    vertices = toLatLng(zone_info['hull']);
+                    vertices = toLatLng(zone_info['hull']),
+                    center = getCenter(vertices);
 
                 if (vertices && vertices.length > 0) {
                     extend(bounds, vertices);
@@ -62,6 +70,15 @@
                     poly.setMap(map);
                     zone_info['polygon'] = poly;
                     addListenersOnPolygon(zone_info);
+
+                    var mapLabel = new MapLabel({
+                      text: zone_info['zone'],
+                      position: center,
+                      map: map,
+                      fontSize: 20,
+                      align: 'right'
+                    });
+                    mapLabel.set('position', center);
                 }
             });
 
@@ -92,7 +109,7 @@
                 geocode_map[ key ] = gc[0];
             }
 
-            contentString += '<hr/><strong>Hulls:</strong>';
+            contentString += '<hr/><strong>Hull points:</strong>';
 
             for (i = 0; i < vertices.getLength(); i++) {
                 var xy = vertices.getAt(i);
