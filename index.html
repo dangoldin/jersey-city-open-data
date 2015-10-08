@@ -51,8 +51,15 @@
             infoWindow = new google.maps.InfoWindow;
             var bounds = new google.maps.LatLngBounds();
 
-            zone_data.forEach(function(zone_info) {
-                var color = '#'+Math.floor(Math.random() * 16777215).toString(16),
+            var colors = [
+                '#ff0000','#f70026','#ef003d','#e70051',
+                '#df0063','#d50076','#cc0085','#c10096',
+                '#b400a6','#a800b5','#9b00c2','#8c00cf',
+                '#7800dd','#6400e9','#4700f4','#0000ff'];
+
+            zone_data.forEach(function(zone_info, idx) {
+                // Using https://gka.github.io/palettes/#colors=lightyellow,orange,deeppink,darkred|steps=16|bez=1|coL=1
+                var color = colors[idx],
                     vertices = toLatLng(zone_info['hull']),
                     center = getCenter(vertices);
 
