@@ -1,0 +1,69 @@
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+  <div id="map" style="width:1200px; height:800px"></div>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js"></script>
+  <script>
+    $(document).ready(function() {
+      $.ajax({
+        type: "GET",
+        url: "/all_dedup.csv",
+        dataType: "text",
+        success: function(data) {
+          plotData(data);
+        }
+      });
+
+      function plotData(data) {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: {lat:40.6915, lng:-74.08947},
+          mapTypeId: google.maps.MapTypeId.TERRAIN
+        });
+
+        var info = readFile(data);
+        $.each(info, function(route,coords){
+          var path = new google.maps.Polyline({
+            path: coords,
+            geodesic: true,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+          });
+
+          path.setMap(map);
+        });
+      }
+
+      function readFile(data) {
+        var info = {}
+        var lines = data.split(/\r\n|\n/);
+        var rows = [];
+        for (var i = 0; i < lines.length; i++) {
+          // lat, lng, bus, address, timestamp
+          var line = lines[i];
+          var parts = line.split('|');
+          rows.push(parts);
+        }
+
+        rows.sort(function(a,b){
+          return new Date(a[4]) - new Date(b[4]);
+        });
+
+        for (i = 0; i < rows.length; i++) {
+          var parts = rows[i];
+          var route = parts[2];
+          if (!(route in info)) {
+            info[route] = [];
+          }
+          info[route].push({lat: parseFloat(parts[0]), lng: parseFloat(parts[1])});
+        }
+        return info;
+      }
+    });
+  </script>
+</body>
+</html>
