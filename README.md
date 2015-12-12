@@ -1,4 +1,4 @@
-# jersy-city-parking-mapper
+# jersey-city-parking-mapper
 
 Visualization of parking zones
 
