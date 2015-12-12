@@ -36,10 +36,13 @@
 
         var info = readFile(data);
         $.each(info, function(route,coords){
+          // From http://www.paulirish.com/2009/random-hex-color-code-snippets/
+          var color = '#'+Math.floor(Math.random()*16777215).toString(16);
+
           var path = new google.maps.Polyline({
             path: coords,
             geodesic: true,
-            strokeColor: '#FF0000',
+            strokeColor: color,
             strokeOpacity: 1.0,
             strokeWeight: 2
           });
