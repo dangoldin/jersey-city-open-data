@@ -1,16 +1,26 @@
 <html>
 <head>
-  <title></title>
+  <title>Jersey City Garbage Trucks</title>
+  <style>
+      html, body {
+          height: 100%;
+          margin: 0;
+          padding: 0;
+      }
+      #map {
+          height: 100%;
+      }
+  </style>
 </head>
 <body>
-  <div id="map" style="width:1200px; height:800px"></div>
+  <div id="map"></div>
   <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
   <script src="https://maps.googleapis.com/maps/api/js"></script>
   <script>
     $(document).ready(function() {
       $.ajax({
         type: "GET",
-        url: "/all_dedup.csv",
+        url: "/jersey-city-parking-mapper/garbage-trucks/all_dedup.csv",
         dataType: "text",
         success: function(data) {
           plotData(data);
