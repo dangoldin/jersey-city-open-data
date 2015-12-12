@@ -20,7 +20,7 @@
     $(document).ready(function() {
       $.ajax({
         type: "GET",
-        url: "/open-data/garbage-trucks/all_dedup.csv",
+        url: "/jersey-city-open-data/garbage-trucks/all_dedup.csv",
         dataType: "text",
         success: function(data) {
           plotData(data);
