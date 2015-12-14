@@ -1,6 +1,7 @@
 <html>
 <head>
   <title>Jersey City Garbage Trucks</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
   <style>
       html, body {
           height: 100%;
@@ -13,11 +14,31 @@
   </style>
 </head>
 <body>
-  <div id="map"></div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-9">
+        <div id="map"></div>
+      </div>
+      <div class="col-md-3">
+        <h4>Routes</h4>
+        <div class="input-group" id="routes">
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
   <script src="https://maps.googleapis.com/maps/api/js"></script>
   <script>
     $(document).ready(function() {
+      var routePolyLines = {};
+
+      var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 12,
+        center: {lat:40.6915, lng:-74.08947},
+        mapTypeId: google.maps.MapTypeId.TERRAIN
+      });
+
       $.ajax({
         type: "GET",
         url: "/jersey-city-open-data/garbage-trucks/all_dedup.csv",
@@ -27,14 +48,21 @@
         }
       });
 
-      function plotData(data) {
-        var map = new google.maps.Map(document.getElementById('map'), {
-          zoom: 13,
-          center: {lat:40.6915, lng:-74.08947},
-          mapTypeId: google.maps.MapTypeId.TERRAIN
-        });
+      $('#routes').on('click', 'input', function(){
+        var checked = $(this).prop('checked');
+        var route = $(this).data('route');
 
+        if (checked) {
+          routePolyLines[route].path.setMap(map);
+        } else {
+          routePolyLines[route].path.setMap(null);
+        }
+      });
+
+      function plotData(data) {
         var info = readFile(data);
+        var bounds = new google.maps.LatLngBounds();
+
         $.each(info, function(route,coords){
           // From http://www.paulirish.com/2009/random-hex-color-code-snippets/
           var color = '#'+Math.floor(Math.random()*16777215).toString(16);
@@ -48,11 +76,15 @@
           });
 
           path.setMap(map);
+
+          routePolyLines[route] = {'path': path, 'color': color};
+
+          $('#routes').append('<input type="checkbox" checked class="route-checkbox" data-route="' + route + '" />&nbsp;' + route + '&nbsp;<span style="background-color: '+color+';">&nbsp;&nbsp;&nbsp;</span><br/>');
         });
       }
 
       function readFile(data) {
-        var info = {}
+        var info = {};
         var lines = data.split(/\r\n|\n/);
         var rows = [];
         for (var i = 0; i < lines.length; i++) {
