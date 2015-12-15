@@ -1,25 +1,31 @@
 <html>
     <head>
         <title>Jersey City Parking Zones</title>
-        <style>
-            html, body {
-                height: 100%;
-                margin: 0;
-                padding: 0;
-            }
-            #map {
-                height: 100%;
-            }
-        </style>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
     </head>
     <body>
-        <ul>
-            <li>
-                <a href="/jersey-city-open-data/parking/">Jersey City Parking Zone Mapper</a>
-            </li>
-            <li>
-                <a href="/jersey-city-open-data/garbage-trucks/">Jersey City Garbage Truck Paths</a>
-            </li>
-        <ul>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-9">
+                    <h2>Jersey City Open Data</h2>
+                    <p>Just a few projects that came around from various data sources in Jersey City.
+                    </p>
+                    <!--
+                        http://www.jciaonline.org/gpsMap.php?view=map
+                        http://data.jerseycitynj.gov/
+                        https://jerseycitynj.seamlessdocs.com/w/records_request
+                        http://jcparking.org/PDF/ZONE%20PERMITS%20ALL%20ZONES.pdf
+                    -->
+                    <ul>
+                        <li>
+                            <a href="/jersey-city-open-data/parking/">Parking Zone Mapper</a>
+                        </li>
+                        <li>
+                            <a href="/jersey-city-open-data/garbage-trucks/">Garbage Truck Paths</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
