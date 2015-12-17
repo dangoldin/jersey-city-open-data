@@ -21,6 +21,10 @@
       </div>
       <div class="col-md-3">
         <h4>Routes</h4>
+        <div>
+          <a href="#" class="btn btn-primary" id="btn-select-all">Select all</a>
+          <a href="#" class="btn btn-primary" id="btn-deselect-all">Deselect all</a>
+        </div>
         <div style="-webkit-column-count:2; -moz-column-count:2; column-count:2;">
           <div class="input-group" id="routes"></div>
         </div>
@@ -33,11 +37,44 @@
   <script>
     $(document).ready(function() {
       var routePolyLines = {};
+      var bounds = new google.maps.LatLngBounds();
 
       var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 12,
         center: {lat:40.6915, lng:-74.08947},
         mapTypeId: google.maps.MapTypeId.TERRAIN
+      });
+
+      function addRoute(el) {
+        var checked = $(el).prop('checked');
+        var route = $(el).data('route');
+
+        if (!checked) {
+          $(el).prop('checked', true);
+          routePolyLines[route].path.setMap(map);
+        }
+      };
+
+      function removeRoute(el) {
+        var checked = $(el).prop('checked');
+        var route = $(el).data('route');
+
+        if (checked) {
+          $(el).prop('checked', false);
+          routePolyLines[route].path.setMap(null);
+        }
+      }
+
+      $('#btn-select-all').click(function() {
+        $('#routes input').each(function(idx, el){
+          addRoute(el);
+        });
+      });
+
+      $('#btn-deselect-all').click(function() {
+        $('#routes input').each(function(idx, el){
+          removeRoute(el);
+        });
       });
 
       $.ajax({
@@ -62,8 +99,6 @@
 
       function plotData(data) {
         var info = readFile(data);
-        var bounds = new google.maps.LatLngBounds();
-
         $.each(info, function(route,coords){
           // From http://www.paulirish.com/2009/random-hex-color-code-snippets/
           var color = '#'+Math.floor(Math.random()*16777215).toString(16);
@@ -82,6 +117,8 @@
 
           $('#routes').append('<input type="checkbox" checked class="route-checkbox" data-route="' + route + '" />&nbsp;' + route + '&nbsp;<span style="background-color: '+color+';">&nbsp;&nbsp;&nbsp;</span><br/>');
         });
+
+        map.setCenter(bounds.getCenter());
       }
 
       function readFile(data) {
@@ -102,10 +139,14 @@
         for (i = 0; i < rows.length; i++) {
           var parts = rows[i];
           var route = parts[2];
+          var lat, lng;
           if (!(route in info)) {
             info[route] = [];
           }
-          info[route].push({lat: parseFloat(parts[0]), lng: parseFloat(parts[1])});
+          lat = parseFloat(parts[0]);
+          lng = parseFloat(parts[1]);
+          info[route].push({lat: lat, lng: lng});
+          bounds.extend(new google.maps.LatLng(lat, lng));
         }
         return info;
       }
