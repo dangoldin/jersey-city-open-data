@@ -41,7 +41,6 @@
 
       var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 12,
-        center: {lat:40.6915, lng:-74.08947},
         mapTypeId: google.maps.MapTypeId.TERRAIN
       });
 
@@ -137,9 +136,9 @@
         });
 
         for (i = 0; i < rows.length; i++) {
-          var parts = rows[i];
-          var route = parts[2];
-          var lat, lng;
+          var parts = rows[i],
+              route = parts[2],
+              lat, lng;
           if (!(route in info)) {
             info[route] = [];
           }
